@@ -33,33 +33,8 @@ func NewEmployeeService(employeeRepo repository.EmployeeRepository) EmployeeServ
 }
 
 func (s *employeeService) Create(req *domain.CreateEmployeeRequest) (*domain.Employee, error) {
-	// Check if employee already exists
-	existingEmployee, err := s.employeeRepo.GetByUserID(req.UserID)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			employee := &domain.Employee{
-				UserID:         req.UserID,
-				OrganizationID: req.OrganizationID,
-				PositionID:     req.PositionID,
-				DepartmentID:   req.DepartmentID,
-				FirstName:      req.FirstName,
-				LastName:       req.LastName,
-				Email:          req.Email,
-				Phone:          req.Phone,
-				DateOfBirth:    req.DateOfBirth,
-				HireDate:       req.HireDate,
-				EmployeeID:     req.EmployeeID,
-				WorkType:       req.WorkType,
-				ManagerID:      req.ManagerID,
-				Status:         "active",
-			}
-
-			if err := s.employeeRepo.Create(employee); err != nil {
-				return nil, fmt.Errorf("failed to create employee: %w", err)
-			}
-
-			return employee, nil
-		}
+	existingEmployee, err := s.employeeRepo.GetByUserID(req.ID)
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, fmt.Errorf("error checking existing employee: %w", err)
 	}
 
@@ -67,7 +42,28 @@ func (s *employeeService) Create(req *domain.CreateEmployeeRequest) (*domain.Emp
 		return nil, errors.New("employee already exists for this user")
 	}
 
-	return nil, errors.New("unexpected error")
+	employee := &domain.Employee{
+		ID:             req.ID,
+		OrganizationID: req.OrganizationID,
+		PositionID:     req.PositionID,
+		DepartmentID:   req.DepartmentID,
+		FirstName:      req.FirstName,
+		LastName:       req.LastName,
+		Email:          req.Email,
+		Phone:          req.Phone,
+		DateOfBirth:    req.DateOfBirth,
+		HireDate:       req.HireDate,
+		EmployeeID:     req.EmployeeID,
+		WorkType:       req.WorkType,
+		ManagerID:      req.ManagerID,
+		Status:         "active",
+	}
+
+	if err := s.employeeRepo.Create(employee); err != nil {
+		return nil, fmt.Errorf("failed to create employee: %w", err)
+	}
+
+	return employee, nil
 }
 
 func (s *employeeService) GetByID(id uuid.UUID) (*domain.Employee, error) {

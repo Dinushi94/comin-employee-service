@@ -81,7 +81,7 @@ func ValidateOrganizationAccess(authClient *auth.AuthClient, orgClient *Organiza
 			return
 		}
 
-		c.Set("user_id", user.ID)
+		c.Set("id", user.ID)
 		c.Set("organization_id", user.OrganizationID)
 		c.Set("email", user.Email)
 		c.Set("role", user.Role)

@@ -30,6 +30,9 @@ func NewEmployeeRepository(db *gorm.DB) EmployeeRepository {
 }
 
 func (r *employeeRepository) Create(employee *domain.Employee) error {
+	if employee.ID == uuid.Nil {
+		employee.ID = uuid.New()
+	}
 	return r.db.Create(employee).Error
 }
 
@@ -41,7 +44,7 @@ func (r *employeeRepository) GetByID(id uuid.UUID) (*domain.Employee, error) {
 
 func (r *employeeRepository) GetByUserID(userID uuid.UUID) (*domain.Employee, error) {
 	var employee domain.Employee
-	err := r.db.Preload("Position").First(&employee, "user_id = ?", userID).Error
+	err := r.db.Preload("Position").First(&employee, "id = ?", userID).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, err

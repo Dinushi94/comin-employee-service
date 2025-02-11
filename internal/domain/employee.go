@@ -8,7 +8,7 @@ import (
 
 type Employee struct {
 	Base
-	UserID          uuid.UUID  `json:"user_id" gorm:"type:uuid;not null"`
+	ID              uuid.UUID  `json:"id" gorm:"type:uuid;not null"`
 	OrganizationID  uuid.UUID  `json:"organization_id" gorm:"type:uuid;not null"`
 	PositionID      *uuid.UUID `json:"position_id,omitempty" gorm:"type:uuid"`
 	DepartmentID    *uuid.UUID `json:"department_id,omitempty" gorm:"type:uuid"`
@@ -59,7 +59,7 @@ type EmployeeDocument struct {
 
 // Request/Response types
 type CreateEmployeeRequest struct {
-	UserID         uuid.UUID  `json:"user_id"`
+	ID             uuid.UUID  `json:"id"`
 	OrganizationID uuid.UUID  `json:"organization_id" binding:"required"`
 	PositionID     *uuid.UUID `json:"position_id"`
 	DepartmentID   *uuid.UUID `json:"department_id"`

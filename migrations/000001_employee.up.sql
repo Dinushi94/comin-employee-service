@@ -17,7 +17,6 @@ CREATE TABLE positions (
 -- Employees
 CREATE TABLE employees (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL,
     organization_id UUID NOT NULL,
     position_id UUID REFERENCES positions(id),
     department_id UUID,

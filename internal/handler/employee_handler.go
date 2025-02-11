@@ -138,7 +138,7 @@ func (h *EmployeeHandler) ListByManager(c *gin.Context) {
 }
 
 func (h *EmployeeHandler) GetByUserID(c *gin.Context) {
-	userID, err := uuid.Parse(c.Param("user_id"))
+	userID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
 		return
