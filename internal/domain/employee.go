@@ -57,7 +57,6 @@ type EmployeeDocument struct {
 	Status       string     `json:"status" gorm:"default:'active'"`
 }
 
-// Request/Response types
 type CreateEmployeeRequest struct {
 	ID             uuid.UUID  `json:"id"`
 	OrganizationID uuid.UUID  `json:"organization_id" binding:"required"`
@@ -72,6 +71,8 @@ type CreateEmployeeRequest struct {
 	EmployeeID     string     `json:"employee_id"`
 	WorkType       string     `json:"work_type"`
 	ManagerID      *uuid.UUID `json:"manager_id"`
+	LeaveTypeID    *uuid.UUID `json:"leave_type_id"`
+	LeaveTotalDays *float64   `json:"leave_total_days"`
 }
 
 type UpdateEmployeeRequest struct {

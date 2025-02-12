@@ -3,6 +3,7 @@ package repository
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Axontik/comin-employee-service/internal/domain"
 	"github.com/google/uuid"
@@ -10,7 +11,7 @@ import (
 )
 
 type EmployeeRepository interface {
-	Create(employee *domain.Employee) error
+	Create(employee *domain.Employee, leaveTypeID *uuid.UUID, totalDays *float64) error
 	GetByID(id uuid.UUID) (*domain.Employee, error)
 	GetByUserID(userID uuid.UUID) (*domain.Employee, error)
 	GetByOrganization(orgID uuid.UUID) ([]domain.Employee, error)
@@ -29,11 +30,29 @@ func NewEmployeeRepository(db *gorm.DB) EmployeeRepository {
 	return &employeeRepository{db: db}
 }
 
-func (r *employeeRepository) Create(employee *domain.Employee) error {
-	if employee.ID == uuid.Nil {
-		employee.ID = uuid.New()
-	}
-	return r.db.Create(employee).Error
+func (r *employeeRepository) Create(employee *domain.Employee, leaveTypeID *uuid.UUID, totalDays *float64) error {
+    return r.db.Transaction(func(tx *gorm.DB) error {
+        if employee.ID == uuid.Nil {
+            employee.ID = uuid.New()
+        }
+        if err := tx.Create(employee).Error; err != nil {
+            return err
+        }
+
+        leaveBalance := &domain.LeaveBalance{
+            EmployeeID:     employee.ID,
+            OrganizationID: employee.OrganizationID,
+            LeaveTypeID:    *leaveTypeID,
+            Year:           time.Now().Year(),
+            TotalDays:      *totalDays,
+        }
+
+        if err := tx.Create(leaveBalance).Error; err != nil {
+            return fmt.Errorf("failed to create leave balance: %w", err)
+        }
+
+        return nil
+    })
 }
 
 func (r *employeeRepository) GetByID(id uuid.UUID) (*domain.Employee, error) {
